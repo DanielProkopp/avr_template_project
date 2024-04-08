@@ -17,7 +17,7 @@ OBJS=$(patsubst $(SRC_DIR)/%.c, $(BIN_DIR)/%.o, $(SRCS))
 
 .PHONY: all clean flash debug
 
-$(BIN_DIR)/%.o: $(SRC_DIR)/%.c
+$(BIN_DIR)/%.o: $(SRC_DIR)/%.c | $(BIN_DIR)
 	$(CC) $(CFLAGS) -I$(INC_DIR) -c $< -o $@
 
 all: $(BIN_DIR)/$(BIN).hex
@@ -27,6 +27,9 @@ $(BIN_DIR)/$(BIN).hex: $(BIN_DIR)/$(BIN).elf
 
 $(BIN_DIR)/$(BIN).elf: $(OBJS)
 	$(CC) -o $@ $^
+
+$(BIN_DIR):
+	@mkdir -p $@
 
 flash:
 	avrdude -p $(MCU) -c $(PROGRAMMER_TOOL) -P $(PROGRAMMER_PORT) -U flash:w:$(BIN_DIR)/$(BIN).hex
